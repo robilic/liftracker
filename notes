@@ -1,0 +1,156 @@
+
++PR page
++Have record page redirect to record page instead of history page
++Draw graph of activity
++Default to last recorded activity + date and re-direct to entry page
++Use cookie for default instead of path value?
+
+Use a better date picker
+Come up with a neat way to enter multiple sets on one page (multiple rows?)
+Have graph show x amount of data at a time
+Recorded activity page only show the current week(?) by default
+Browse recorded activity by week
+
+
+Users
+
+Activity_Definition
+	ID	Name	Val1		Val2
+	5	'Curl'	'Weight'	'Reps'
+
+Activity_Record
+	Date, 		ID,	ActDefId,	Val1,	Val2
+	03/24/2018,	2,	5,			50,		10
+
+
+WE'RE NOT EVEN WORRIED ABOUT CARDIO YET
+
+Create the base list of excersizes
+CSV upload historical data
+Graph user data
+Find max reps, PR's, etc
+
+export FLASK_APP=liftracker.py
+export FLASK_DEBUG=1
+
+from app import db
+from app.models import User, ActivityDef, ActivityRec
+from datetime import datetime, timedelta
+
+User.query.all()
+User.query.filter_by(whatever=whatever).all()/.first()
+
+rm -rf migrations
+flask db init
+db.create_all()
+
+bp = ActivityDef(name='Flat Bench Press')
+ex = ActivityDef(name='Back Squat')
+dl = ActivityDef(name='Deadlift')
+fs = ActivityDef(name='Front Squat')
+oh = ActivityDef(name='Overhead Press')
+db.session.add_all([bp, ex, dl, fs, oh])
+db.session.commit()
+
+u = User()
+
+db.session.add(u)
+db.session.commit()
+
+r1 = ActivityRec(activitydef_id = 1, user_id = 1, weight = 275, reps = 5, logged=datetime.now() - timedelta(minutes=10))
+r2 = ActivityRec(activitydef_id = 1, user_id = 1, weight = 295, reps = 3, logged=datetime.now() - timedelta(minutes=5))
+r3 = ActivityRec(activitydef_id = 1, user_id = 1, weight = 225, reps = 10, logged=datetime.now())
+
+db.session.add(r1)
+db.session.add(r2)
+db.session.add(r3)
+db.session.commit()
+
+After editing model, to migrate DB:
+
+flask db migrate -m 'a comment about the migration'
+flask db upgrade
+
+Delete a single user:
+
+u = User.query.all()[1]
+db.session.delete(u)
+db.session.commit()
+
+SQLAlchemy examples:
+
+  Find all activity records, order by weight
+
+  foo = db.session.query(ActivityRec).order_by(ActivityRec.weight)
+
+  
+  Get only the weight and rep columns
+
+  foo = db.session.query(ActivityRec, ActivityRec.weight, ActivityRec.reps).order_by(ActivityRec.weight)
+  foo[0]
+  (<ActivityRec 3>, 225, 10)
+
+  
+  Find all lifts over 315lb
+
+  foo = db.session.query(ActivityRec).filter(ActivityRec.weight>'315').all()
+
+  
+  Find all 1-rep lifts over 350lb
+
+  foo = db.session.query(ActivityRec).filter(ActivityRec.weight>'350').filter(ActivityRec.reps=='1').all()
+
+  
+  Joins using filter()
+
+  foo = db.session.query(ActivityRec, ActivityDef, ActivityRec.logged, ActivityRec.reps, db.func.max(ActivityRec.weight)).group_by(ActivityRec.activitydef_id).filter(ActivityRec.activitydef_id==ActivityDef.id).all()
+  foo[0]
+  (<ActivityRec 8>, <ActivityDef 'Flat Bench Press'>, datetime.datetime(2018, 6, 1, 15, 8, 57, 828964), 1, 355)
+
+  
+  Joins using join()
+
+  foo = db.session.query(ActivityRec, ActivityDef.name, ActivityRec.logged, ActivityRec.reps, db.func.max(ActivityRec.weight)).join(ActivityDef, ActivityDef.id==ActivityRec.activitydef_id).group_by(ActivityRec.activitydef_id).all()
+
+  Label Fields
+  foo = db.session.query(ActivityRec, ActivityRec.weight.label('weight'))
+  foo[0].weight
+  275
+  
+  You need to use a label to access aggregates - func.max(weight)
+
+  personal_records = db.session.query(ActivityRec, ActivityDef.name, ActivityRec.logged, label('weight', db.func.max(ActivityRec.weight))).join(ActivityDef, ActivityDef.id==ActivityRec.activitydef_id).group_by(ActivityRec.activitydef_id).all()
+
+
+# get all the activityrecs
+
+foo = db.session.query(ActivityRec, ActivityRec.weight.label('weight'), ActivityRec.reps.label('reps'), ActivityRec.logged.label('logged'), ActivityRec.activitydef_id.label('activitydef_id'))
+
+a = []
+
+for f in foo:
+	print f.id
+
+
+
+	foobaz = []
+	foobaz.append({"x": "2018-06-01", "y": 40, "r": 3})
+	d = [foobaz, foobar]
+
+
+# search by a single activitydef id
+
+activity_count = ActivityDef.query.count()
+reply = []
+
+for a_id in range(1, activity_count+1):
+	foo = db.session.query(ActivityRec, ActivityRec.weight.label('weight'), ActivityRec.reps.label('reps'), ActivityRec.logged.label('logged'), ActivityRec.activitydef_id.label('activitydef_id')).filter_by(activitydef_id=a_id)
+	d=[]
+	for f in foo:
+		r = (15 if (f.reps > 13) else (f.reps + 2))
+		d.append({"x": f.logged.strftime("%d-%m-%Y"), "y": f.weight, "r": r })
+	reply.append(d)
+
+print(reply)
+
+

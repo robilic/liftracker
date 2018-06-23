@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Liftracker - {{ user.username }}{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script src="{{url_for('static', filename='js/moment.js')}}"></script>
+    <script src="{{url_for('static', filename='js/Chart.min.js')}}"></script>
+{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <div class="profile-header">
+        <h1>{{ user.username }}</h1>
+        <p>
+            <h3>Activity</h3>
+            <p>
+                <canvas id="myChart"></canvas>
+                <script>
+                    var r = new XMLHttpRequest();
+                    var url = "http://127.0.0.1:5000/bubble-chart-data";
+                    var chartData;
+                    r.open('GET', url);
+                    r.onload = function() {
+                        chartData = JSON.parse(r.responseText);
+                        chart.data.datasets[0].data = chartData[0];
+                        chart.data.datasets[1].data = chartData[1];
+                        chart.data.datasets[2].data = chartData[2];
+                        chart.data.datasets[3].data = chartData[3];
+                        chart.data.datasets[4].data = chartData[4];
+                        chart.update();
+
+                        /* for each set of results in response
+                            add to next dataset */
+                    };
+                    r.send();
+
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'bubble',
+                        data: {
+                            labels: ["2018-05-01", "2018-06-01", "2018-07-01"],
+
+                            datasets: [
+                            {
+                                fill: true,
+                                label: "Flat Bench Press",
+                                backgroundColor: 'Tomato',
+                                borderColor: 'Tomato',
+                                borderWidth: 2,
+                                data: chartData
+                            },
+                            {
+                                fill: true,
+                                label: "Back Squat",
+                                backgroundColor: 'Orange',
+                                borderColor: 'Orange',
+                                borderWidth: 2,
+                                data: chartData
+                            },
+                            {
+                                fill: true,
+                                label: "Deadlift",
+                                backgroundColor: 'DodgerBlue',
+                                borderColor: 'DodgerBlue',
+                                borderWidth: 2,
+                                data: chartData
+                            },
+                            {
+                                fill: true,
+                                label: "Front Squat",
+                                backgroundColor: 'MediumSeaGreen',
+                                borderColor: 'MediumSeaGreen',
+                                borderWidth: 2,
+                                data: chartData
+                            },
+                            {
+                                fill: true,
+                                label: "Overhead Press",
+                                backgroundColor: 'Violet',
+                                borderColor: 'Violet',
+                                borderWidth: 2,
+                                data: chartData
+                            },
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                xAxes: [{
+                                    scaleLabel: {
+                                        display: true
+                                    },
+                                    type: 'time',
+                                    time: {
+                                        unit: 'month',
+                                        displayFormats: {
+                                            month: 'MMM'
+                                        }
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                </script>
+            </p>
+        </p>
+        <p>
+            <h3>PR's</h3>
+            <table>
+            {% for p in prs %}
+                <tr><td>{{p.name}}&nbsp;</td><td>{{p.weight}}&nbsp;</td><td>{{p.activitydef_id}}&nbsp;</td><td>{{p.logged.strftime('%m-%d-%Y')}}&nbsp;</td></tr>
+            {% endfor %}
+            </table>
+        </p>
+        <p>
+            {% if user == current_user %}
+            <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endblock %}

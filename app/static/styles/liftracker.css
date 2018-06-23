@@ -1,0 +1,45 @@
+/* http://divtable.com/table-styler/ */
+table.activity-record-table {
+  border: 4px solid #E0E0E0;
+  background-color: #398AA4;
+  width: 400px;
+  text-align: center;
+  border-collapse: collapse;
+}
+table.activity-record-table td, table.activity-record-table th {
+  border: 1px solid #E0E0E0;
+  padding: 5px 10px;
+}
+table.activity-record-table tbody td {
+  font-size: 14px;
+  font-weight: bold;
+  color: #E0E0E0;
+}
+table.activity-record-table thead {
+  background: #555555;
+  border-bottom: 2px solid #E0E0E0;
+}
+table.activity-record-table thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #E0E0E0;
+  text-align: center;
+  border-left: 2px solid #E0E0E0;
+}
+table.activity-record-table thead th:first-child {
+  border-left: none;
+}
+
+table.activity-record-table tfoot td {
+  font-size: 13px;
+}
+table.activity-record-table tfoot .links {
+  text-align: right;
+}
+table.activity-record-table tfoot .links a{
+  display: inline-block;
+  background: #FFFFFF;
+  color: #398AA4;
+  padding: 2px 8px;
+  border-radius: 5px;
+}

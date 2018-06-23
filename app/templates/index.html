@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Lifting History{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+	<h1>Hello, {% if name %} {{ name }} {% else %} Stranger {% endif %}!</h1>
+</div>
+<div>
+Your recorded activity:
+<table class="activity-record-table">
+	<thead><tr><th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th></tr></thead>
+	{% for a in activityrecs %}
+	<tr><td>{{a.logged.strftime('%m-%d-%Y')}}</td><td>{{a.activitydef.name}}</td><td>{{a.weight}}</td><td>{{a.reps}}</tr>
+	{% endfor %}
+</table>
+</div>
+{% endblock %}
