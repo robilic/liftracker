@@ -75,9 +75,9 @@ ExampleActivityRec(1, 2, 245, 8, datetime.datetime(2018, 5, 29))
 ExampleActivityRec(1, 2, 255, 6, datetime.datetime(2018, 5, 29))
 ExampleActivityRec(1, 2, 285, 4, datetime.datetime(2018, 5, 29))
 
-ExampleActivityRec(1, 2, 355, 8, datetime.datetime(2018, 6, 2))
-ExampleActivityRec(1, 2, 365, 6, datetime.datetime(2018, 6, 2))
-ExampleActivityRec(1, 2, 395, 4, datetime.datetime(2018, 6, 2))
+ExampleActivityRec(1, 2, 255, 8, datetime.datetime(2018, 6, 2))
+ExampleActivityRec(1, 2, 265, 6, datetime.datetime(2018, 6, 2))
+ExampleActivityRec(1, 2, 295, 4, datetime.datetime(2018, 6, 2))
 
 
 ExampleActivityRec(2, 1, 305, 6, datetime.datetime(2018, 5, 4))
